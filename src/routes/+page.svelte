@@ -33,20 +33,27 @@
 </script>
 
 <main>
-	<h1>Panopto Whisperer</h1>
+	<h1>Panopto + OpenAI Whisper</h1>
+	<p>
+		This tool is available for use in trialing new AI transcription services for Panopto. It is not
+		intended for production use, but is available to all staff for testing.
+	</p>
 	{#if !$page.data.isSignedIn}
-		<p>
-			This tool is available for use in trialing new AI transcription services for Panopto. It is
-			not intended for production use, but is available to all staff for testing. To begin, sign in
-			with your University of Auckland account through Panopto:
-		</p>
+		<p>To begin, sign in with your University of Auckland account through Panopto:</p>
 		<a href={$page.data.authorizeURL} class="btn btn-primary">Sign in with Panopto</a>
 	{:else}
 		<p>
 			You are signed in as <span class="username"
 				>{$page.data?.userdata?.given_name || 'an anonymous user'}</span
-			>. You can now use the tool to transcribe your Panopto recordings.
+			>. You can now use the tool to transcribe your Panopto recordings. To begin, paste the URL of
+			the session you want transcribed below.
 		</p>
+		<h2>Please note:</h2>
+		<ul class="list-disc list-inside">
+			<li>You must be the owner of the session to transcribe it</li>
+			<li>This will delete any existing English (UK) captions</li>
+			<li>Transcription takes a long time - up to 60 minutes! Be prepared to wait.</li>
+		</ul>
 		<input type="text" class="form-control" placeholder="Enter Panopto URL" bind:value={url} />
 		<button
 			class="btn btn-primary btn-block"
@@ -71,7 +78,13 @@
 <style lang="postcss">
 	main {
 		& h1 {
-			@apply text-5xl font-light text-center mb-4;
+			@apply text-4xl font-light text-center;
+		}
+		& h2 {
+			@apply font-bold mt-4;
+		}
+		& p {
+			@apply mt-4;
 		}
 		& input {
 			@apply block w-full mt-4;
