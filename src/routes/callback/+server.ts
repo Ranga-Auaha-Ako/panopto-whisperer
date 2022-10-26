@@ -12,8 +12,8 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
 	try {
 		const accessToken = await client.getToken(tokenParams);
-		cookies.set('panopto_access_token', accessToken.token.access_token);
-		cookies.set('panopto_access_token_expires', accessToken.token.expires_at);
+		cookies.set('panopto_access_token', accessToken.token.access_token, { secure: false });
+		cookies.set('panopto_access_token_expires', accessToken.token.expires_at, { secure: false });
 		return new Response('Success', { status: 200 });
 	} catch (error: any) {
 		console.error(error);
