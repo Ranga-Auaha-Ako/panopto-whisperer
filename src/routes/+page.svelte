@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import { BarLoader } from 'svelte-loading-spinners';
 
@@ -15,17 +15,29 @@
 
 	let loading = false;
 
-	const transcribe = async () => {
+	const transcribe = async (id?: string) => {
 		loading = true;
 		await fetch('/transcribe', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ sessionID })
+			body: JSON.stringify({ sessionID: id || sessionID })
 		});
 		loading = false;
 	};
+
+	onMount(async () => {
+		const id = $page.url.searchParams.get('id');
+		if (id) {
+			if ($page.data.isSignedIn) {
+				url = id;
+				transcribe(id);
+			} else {
+				// Wait for the user to sign in
+			}
+		}
+	});
 </script>
 
 <main>
@@ -70,6 +82,17 @@
 				<BarLoader color="#00467F" />
 			</div>
 		{/if}
+		<p>
+			Alternatively, drag this bookmarklet to your bookmarks bar and click when viewing a Panopto
+			video to run the captioning process.
+		</p>
+		<a
+			class="bookmarklet"
+			href={`javascript:window.open('${$page.url.href}?id=' + (new URL(document.URL)).searchParams.get('id'))`}
+			on:click|preventDefault={() => {}}
+		>
+			Transcribe this video
+		</a>
 	{/if}
 </main>
 
@@ -86,6 +109,9 @@
 		}
 		& input {
 			@apply block w-full mt-4;
+		}
+		& .bookmarklet {
+			@apply mt-4 text-center bg-uni-blue text-white font-bold py-1 px-2 rounded;
 		}
 	}
 	.loadingBox {
