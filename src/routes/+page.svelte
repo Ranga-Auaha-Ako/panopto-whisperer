@@ -36,7 +36,7 @@
 	</p>
 	{#if !$page.data.isSignedIn}
 		<p>To begin, sign in with your University of Auckland account through Panopto:</p>
-		<a href={$page.data.authorizeURL} target="_blank" class="btn btn-primary"
+		<a href={$page.data.authorizeURL} class="btn btn-primary btn-block text-center"
 			>Sign in with Panopto</a
 		>
 	{:else}

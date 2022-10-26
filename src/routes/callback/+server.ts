@@ -14,7 +14,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		const accessToken = await client.getToken(tokenParams);
 		cookies.set('panopto_access_token', accessToken.token.access_token, { secure: false });
 		cookies.set('panopto_access_token_expires', accessToken.token.expires_at, { secure: false });
-		return new Response('Success', { status: 200 });
+		return new Response('Redirect', { status: 303, headers: { Location: '/' } });
 	} catch (error: any) {
 		console.error(error);
 		return new Response('Access Token Error', { status: 500 });

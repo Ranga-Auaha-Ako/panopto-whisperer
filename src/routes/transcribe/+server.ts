@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 		});
 		srtFile = srt.data;
 	} catch (error) {
-		console.error('Failed!');
+		console.error(error);
 		return new Response('Failed to transcribe this lecture.', { status: 500 });
 	}
 	// Save SRT file to Panopto
