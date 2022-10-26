@@ -1,0 +1,14 @@
+/* Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn {
+	@apply bg-uni-blue cursor-pointer hover:ring-2 text-white font-bold py-2 px-4 transition mt-4 inline-block;
+	&.btn-block {
+		@apply block w-full;
+	}
+	&[disabled] {
+		@apply bg-gray-400 cursor-not-allowed hover:ring-0;
+	}
+}
