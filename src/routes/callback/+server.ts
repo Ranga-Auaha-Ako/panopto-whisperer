@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/public';
 import { client, scope } from '$lib/panopto-oauth';
 import type { RequestHandler } from './$types';
 
@@ -6,7 +7,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	if (!code) return new Response('No code provided', { status: 400 });
 	const tokenParams = {
 		code,
-		redirect_uri: `${url.origin}${url.pathname}`
+		redirect_uri: `${env.PUBLIC_SERVER_HOSTNAME}${url.pathname}`
 	};
 
 	try {

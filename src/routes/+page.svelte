@@ -4,10 +4,6 @@
 	import { page } from '$app/stores';
 	import { BarLoader } from 'svelte-loading-spinners';
 
-	onMount(() => {
-		if (!$page.data.isSignedIn) goto($page.data.authorizeURL);
-	});
-
 	let url = '';
 	$: sessionID = (() => {
 		try {
@@ -40,7 +36,9 @@
 	</p>
 	{#if !$page.data.isSignedIn}
 		<p>To begin, sign in with your University of Auckland account through Panopto:</p>
-		<a href={$page.data.authorizeURL} class="btn btn-primary">Sign in with Panopto</a>
+		<a href={$page.data.authorizeURL} target="_blank" class="btn btn-primary"
+			>Sign in with Panopto</a
+		>
 	{:else}
 		<p>
 			You are signed in as <span class="username"

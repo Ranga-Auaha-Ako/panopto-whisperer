@@ -3,7 +3,10 @@ import { client, createAuthFetch, scope } from '$lib/panopto-oauth';
 import { env } from '$env/dynamic/public';
 
 export const load: PageServerLoad = async ({ cookies, url }) => {
-	const authorizeURL = client.authorizeURL({ redirect_uri: `${url.origin}/callback`, scope });
+	const authorizeURL = client.authorizeURL({
+		redirect_uri: `${env.PUBLIC_SERVER_HOSTNAME}/callback`,
+		scope
+	});
 
 	const token = cookies.get('panopto_access_token');
 	const expires = cookies.get('panopto_access_token_expires');
