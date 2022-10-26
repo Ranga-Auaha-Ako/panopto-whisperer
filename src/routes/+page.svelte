@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { env } from '$env/dynamic/public';
+	import { BarLoader } from 'svelte-loading-spinners';
 
 	onMount(() => {
 		if (!$page.data.isSignedIn) goto($page.data.authorizeURL);
@@ -17,16 +17,19 @@
 		}
 	})();
 
-	function transcribe() {
-		fetch('/transcribe', {
+	let loading = false;
+
+	const transcribe = async () => {
+		loading = true;
+		await fetch('/transcribe', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({ sessionID })
 		});
-		throw new Error('Function not implemented.');
-	}
+		loading = false;
+	};
 </script>
 
 <main>
@@ -46,13 +49,22 @@
 		</p>
 		<input type="text" class="form-control" placeholder="Enter Panopto URL" bind:value={url} />
 		<button
-			class="btn btn-primary"
-			disabled={!sessionID}
+			class="btn btn-primary btn-block"
+			disabled={!sessionID || loading}
 			title={!sessionID ? 'Please enter a valid Panopto URL' : 'Click to begin transcribing'}
 			on:click={() => transcribe()}
 		>
-			Transcribe</button
-		>
+			{#if loading}
+				Transcribing...
+			{:else}
+				Transcribe
+			{/if}
+		</button>
+		{#if loading}
+			<div class="m-auto loadingBox">
+				<BarLoader color="#00467F" />
+			</div>
+		{/if}
 	{/if}
 </main>
 
@@ -63,6 +75,11 @@
 		}
 		& input {
 			@apply block w-full mt-4;
+		}
+	}
+	.loadingBox {
+		& :global(.wrapper) {
+			width: 100% !important;
 		}
 	}
 </style>
