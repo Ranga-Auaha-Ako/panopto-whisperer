@@ -8,12 +8,14 @@
 
 <footer>
 	<p>
-		Copyright © University of Auckland 2022. <br />Tool developed by
+		Copyright © University of Auckland 2022. <br />
+		Developed by
 		<a
 			href="https://www.auckland.ac.nz/en/staff/learning-and-teaching/teaching-course-development1/ranga-auaha-ako.html"
 		>
-			Ranga Auaha Ako
-		</a>.
+			Ranga Auaha Ako</a
+		>
+		|
 		<a href="https://github.com/Ranga-Auaha-Ako/panopto-whisperer/">Source &amp; Contribute</a>
 	</p>
 </footer>

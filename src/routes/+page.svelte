@@ -3,6 +3,8 @@
 	import { onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import { BarLoader } from 'svelte-loading-spinners';
+	import type { TranscribeUpdate } from '$lib/transcribe';
+	import { slide } from 'svelte/transition';
 
 	let url = '';
 	$: sessionID = (() => {
@@ -14,16 +16,53 @@
 	})();
 
 	let loading = false;
+	let updates: TranscribeUpdate[] = [];
 
 	const transcribe = async (id?: string) => {
 		loading = true;
-		await fetch('/transcribe', {
+		updates = [];
+		const res = await fetch('/transcribe', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({ sessionID: id || sessionID })
 		});
+		const reader = res.body?.getReader();
+		if (!reader) {
+			updates = [
+				...updates,
+				{
+					type: 'error',
+					message: "Couldn't connect to server",
+					time: 0
+				}
+			];
+			loading = false;
+			return;
+		}
+
+		const decoder = new TextDecoder('utf-8');
+		while (true) {
+			const { value, done } = await reader.read();
+			const text = decoder.decode(value, { stream: true });
+			const segments = text.split('\n');
+			try {
+				segments.forEach((segment) => {
+					if (!segment) return; // Skip empty segments
+					const json = JSON.parse(segment);
+					console.log('Received', json, done);
+					updates = [...updates, json];
+					if (done) {
+						loading = false;
+						throw new Error('Server closed connection');
+					}
+				});
+			} catch (error) {
+				console.log(error);
+				break;
+			}
+		}
 		loading = false;
 	};
 
@@ -82,6 +121,21 @@
 				<BarLoader color="#00467F" />
 			</div>
 		{/if}
+		{#if loading || updates.length > 0}
+			<div class="updates">
+				{#each updates as update}
+					<div
+						class="update"
+						class:error={update.type === 'error'}
+						class:progress={update.type === 'progress'}
+						class:complete={update.type === 'complete'}
+					>
+						<div class="time">{update.time.toFixed(2)}s</div>
+						<div class="message">{update.message}</div>
+					</div>
+				{/each}
+			</div>
+		{/if}
 		<p>
 			Alternatively, drag this bookmarklet to your bookmarks bar and click when viewing a Panopto
 			video to run the captioning process.
@@ -112,6 +166,31 @@
 		}
 		& .bookmarklet {
 			@apply mt-4 text-center bg-uni-blue text-white font-bold py-1 px-2 rounded;
+		}
+		& .updates {
+			@apply rounded-b border-2 border-dashed border-gray-300 bg-gray-200 p-4;
+			@apply font-mono text-xs;
+			& .update {
+				@apply grid my-1;
+				grid-template-columns: auto 1fr;
+				&.error {
+					@apply text-uni-color-red font-bold;
+				}
+				&.progress {
+					@apply text-uni-color-blue;
+				}
+				&.complete {
+					@apply text-uni-color-green font-bold;
+				}
+				& .time {
+					@apply pr-2 box-content;
+					width: 5ch;
+				}
+				& .message {
+					@apply pl-2 border-l-2 border-solid border-slate-300;
+					@apply break-words overflow-x-auto;
+				}
+			}
 		}
 	}
 	.loadingBox {
