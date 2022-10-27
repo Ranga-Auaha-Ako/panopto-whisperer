@@ -78,14 +78,16 @@ export default class Transcriber {
 				message: 'Transcribing audio file... This will take a while.',
 				time: this.secondsSinceStart()
 			};
-			console.log('Transcribing audio file...');
+			console.log(`Transcribing audio file: ${this.sessionID}`);
 			const form = new FormData();
 			form.append('audio_file', audioFile);
 			const srt = await axios.post(`${env.BACKEND_WHISPER_HOST}/get-srt`, form, {
 				headers: form.getHeaders(),
 				responseType: 'stream'
 			});
-			console.log('Finished transcribing audio file...');
+			console.log(
+				`Finished transcribing audio file (took ${this.secondsSinceStart().toFixed(2)} seconds)...`
+			);
 			srtFile = srt.data;
 		} catch (error) {
 			console.error(error);

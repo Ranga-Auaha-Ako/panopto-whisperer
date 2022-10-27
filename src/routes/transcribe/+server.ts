@@ -43,6 +43,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 					controller.enqueue(JSON.stringify(update) + '\n\n');
 				}
 				controller.close();
+				return;
 			} catch (error) {
 				console.error(error);
 				controller.enqueue(JSON.stringify({ type: 'error', message: error }));

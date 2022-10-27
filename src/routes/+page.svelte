@@ -53,13 +53,13 @@
 					const json = JSON.parse(segment);
 					console.log('Received', json, done);
 					updates = [...updates, json];
-					if (done) {
-						loading = false;
-						throw new Error('Server closed connection');
-					}
 				});
 			} catch (error) {
 				console.log(error);
+				break;
+			}
+			if (done) {
+				loading = false;
 				break;
 			}
 		}
